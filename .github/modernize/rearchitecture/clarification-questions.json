@@ -1,0 +1,290 @@
+{
+  "schema": "clarification-questions/v1",
+  "generated_at": "2026-11-24T05:42:00Z",
+  "user_input": "remove Django backend and with same funtionality and frontend; clarified: target is Django/Python and remove Laravel completely",
+  "title": "Laravel to Django backend replacement",
+  "assessment_snapshot": {
+    "intro": "The workspace contains a Next.js frontend and a Laravel/PHP API, not an existing Django backend. The migration plan found:",
+    "bullets": [
+      "58 API routes, 22 model files, and 34 migration-defined tables",
+      "Frontend points to the local API at 127.0.0.1:8000",
+      "User requested Django/Python, feature parity and removal of Laravel; Socket.IO service is separate"
+    ]
+  },
+  "proposed_outcome": "Replace the Laravel backend in place with a Django API while preserving the frontend and its user-facing behavior, keeping API contracts compatible where possible, migrating existing SQLite data and required settings, then removing Laravel source files without exposing secrets.",
+  "scope": [
+    "backend",
+    "generic"
+  ],
+  "status": "awaiting_answers",
+  "questions": [
+    {
+      "id": "B1",
+      "kit": "backend",
+      "field": "target.framework",
+      "title": "Django version",
+      "question": "Which Django version and API framework should the replacement use?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "Django 5.2 LTS + Django REST Framework",
+      "default": null,
+      "prefilled": true,
+      "prefilled_value": "Django / Python; version not specified",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Django 5.2 LTS + Django REST Framework",
+          "label": "Django 5.2 LTS + Django REST Framework"
+        },
+        {
+          "value": "Django 6.x + Django REST Framework",
+          "label": "Django 6.x + Django REST Framework"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B2",
+      "kit": "backend",
+      "field": "api.contract_preservation",
+      "title": "API compatibility",
+      "question": "How strictly should the Django API preserve the current Laravel endpoints and responses?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "must preserve",
+      "default": "must preserve",
+      "prefilled": true,
+      "prefilled_value": "must preserve; keep the existing frontend working",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must preserve",
+          "label": "Must preserve routes, payloads, and status-code behavior for the existing frontend"
+        },
+        {
+          "value": "can break with versioning",
+          "label": "Breaking changes are allowed if versioned"
+        },
+        {
+          "value": "can break",
+          "label": "A redesigned API is allowed"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B3",
+      "kit": "backend",
+      "field": "data.migration_strategy",
+      "title": "SQLite data migration",
+      "question": "How should the current SQLite data be moved into the Django backend?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "new schema",
+      "default": "TBD / assess in research phase",
+      "prefilled": true,
+      "prefilled_value": "Migrate existing SQLite data; active database path/schema should be identified locally",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "new schema",
+          "label": "Create Django-owned schema and migrate/transform existing SQLite data into it"
+        },
+        {
+          "value": "in-place",
+          "label": "Keep the same SQLite database and adapt Django to its existing schema"
+        },
+        {
+          "value": "TBD / assess in research phase",
+          "label": "Assess the active database and schema first, then choose the safest migration"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B4",
+      "kit": "backend",
+      "field": "auth.framework",
+      "title": "Authentication migration",
+      "question": "What should happen to existing Laravel Sanctum users and bearer tokens?",
+      "importance": "recommended",
+      "impact": 4,
+      "recommended": "preserve users and compatible tokens where feasible; require sign-in again if needed",
+      "default": "preserve existing auth mechanism; detect from codebase",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "preserve users and compatible tokens where feasible; require sign-in again if needed",
+          "label": "Migrate users and preserve compatible tokens where feasible; require sign-in again if a token cannot be safely retained"
+        },
+        {
+          "value": "migrate users; invalidate tokens and require sign-in",
+          "label": "Migrate user accounts but invalidate all existing tokens"
+        },
+        {
+          "value": "replace auth with JWT; require sign-in",
+          "label": "Move to JWT authentication and require sign-in"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B5",
+      "kit": "backend",
+      "field": "nfr.sla",
+      "title": "Performance expectations",
+      "question": "What response-time or availability target should Django meet?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": "match current production baseline; no regression",
+      "default": "match current production baseline; no regression",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "match current production baseline; no regression",
+          "label": "Match the current baseline; no regression"
+        },
+        {
+          "value": "p95 latency under 200 ms",
+          "label": "p95 latency under 200 ms"
+        },
+        {
+          "value": "other",
+          "label": "Specify another target"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G1",
+      "kit": "generic",
+      "field": "success.definition",
+      "title": "Definition of done",
+      "question": "What outcomes define a successful migration?",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "feature parity verified by tests and smoke checks",
+      "default": "feature parity with the current system; all existing user-facing behaviors preserved",
+      "prefilled": true,
+      "prefilled_value": "same functionality and frontend; feature parity",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "feature parity with current system; all existing user-facing behaviors preserved",
+          "label": "Feature parity; all existing user-facing behaviors preserved"
+        },
+        {
+          "value": "feature parity verified by tests and smoke checks",
+          "label": "Feature parity verified by automated tests and smoke checks"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G2",
+      "kit": "generic",
+      "field": "out_of_scope",
+      "title": "Out-of-scope components",
+      "question": "Which existing components should not be changed as part of this backend migration?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": null,
+      "default": "no explicit exclusions; agent will infer from project structure",
+      "prefilled": true,
+      "prefilled_value": "Do not redesign the Next.js frontend or change the separate Socket.IO service except for essential API integration compatibility.",
+      "answer": null,
+      "depends_on": null,
+      "type": "text"
+    },
+    {
+      "id": "G3",
+      "kit": "generic",
+      "field": "existing_tests.posture",
+      "title": "Test policy",
+      "question": "How should the existing test suites be handled during migration?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": "partial: preserve frontend tests and add Django API parity tests",
+      "default": "must pass",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must pass",
+          "label": "Existing tests must pass; add Django tests for migrated behavior"
+        },
+        {
+          "value": "can rewrite",
+          "label": "Rewrite tests with equivalent Django coverage"
+        },
+        {
+          "value": "partial: preserve frontend tests and add Django API parity tests",
+          "label": "Preserve frontend tests and add equivalent Django API tests; replace Laravel-specific tests"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G4",
+      "kit": "generic",
+      "field": "target.output_location",
+      "title": "Replacement location",
+      "question": "Where should the Django backend be created?",
+      "importance": "required",
+      "impact": 4,
+      "recommended": "in-place",
+      "default": "new sibling directory: backend-django-new",
+      "prefilled": true,
+      "prefilled_value": "in-place; replace Laravel while keeping frontend/ and socket-server/",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "in-place",
+          "label": "Replace Laravel inside the existing backend/ directory"
+        },
+        {
+          "value": "backend-django-new",
+          "label": "Create backend-django-new beside the existing backend/ first"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G5",
+      "kit": "generic",
+      "field": "constraints.additional",
+      "title": "Additional constraints",
+      "question": "Add any additional migration constraints, or leave the stated constraints unchanged.",
+      "importance": "optional",
+      "impact": 2,
+      "recommended": null,
+      "default": "None beyond the decisions listed in this specification.",
+      "prefilled": true,
+      "prefilled_value": "Preserve all existing user-facing features and the current frontend. Migrate SQLite data and required settings before deleting Laravel files. Do not reveal secrets.",
+      "answer": null,
+      "depends_on": null,
+      "type": "text"
+    }
+  ]
+}

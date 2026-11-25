@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Executable task graph for replacing the AgroInsight Laravel API with Django while preserving API behavior, data, frontend UX, and the independent Socket.IO service.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-characterize-existing-api",
+      "description": "Capture the current API and feature behavior as the compatibility baseline",
+      "reason": "The existing PHP tests are examples and do not capture API behavior; the frontend and backend route table establish many live contracts that must survive replacement.",
+      "requirements": "Record all 58 HTTP route contracts from backend/routes/api.php, including method, /api path, auth requirement, request fields, response/status/error shape, and relevant feature behavior. Add focused characterization tests or a reviewed contract inventory for auth, profile, regions/dashboard/agronomy, news/schemes/alerts/AI, community/co-explore, and marketplace. Inspect source code as needed, but do not read backend/.env or database contents. Keep the Next.js UX and socket-server behavior as non-regression boundaries.",
+      "dependencies": [],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-establish-django-and-data-layer",
+      "description": "Establish the Django backend foundation and a safe mapping for existing application data",
+      "reason": "The new backend needs a maintainable Python project, a complete model/schema mapping, and a non-destructive path to retain existing records.",
+      "requirements": "Create a structured Django/Python backend with reproducible Python dependency and launch configuration. Map the existing Eloquent models and migration-defined tables, relationships, constraints, and relevant seed/reference data. Design a repeatable, reversible migration using a separately confirmed database copy/destination; preserve the original database byte-for-byte and do not expose row contents. Confirm active database source and target before reading or migrating user data. Preserve existing auth records/tokens where feasible, and stop for approval before any destructive or irreversible data operation.",
+      "dependencies": [
+        "001-characterize-existing-api"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-migrate-auth-and-core-agriculture-api",
+      "description": "Migrate authentication, profiles, regional analytics, and core agriculture endpoints",
+      "reason": "These endpoints provide the primary application data and identity behavior consumed by the existing frontend.",
+      "requirements": "Implement Django behavior for test/health, registration/login/logout, user profile read/update, regions, analytics, crops, dashboard, irrigation/start, spraying/schedule, soil/analyze, weather/view, report/generate, alerts, advisor location updates, live weather/alerts, crop/product recommendations. Preserve current API paths, verbs, field names, status codes, validation/errors, bearer-token auth boundaries, CORS behavior, and multipart profile upload behavior as captured in task 001. Add focused tests for each endpoint and auth boundary; do not read secrets.",
+      "dependencies": [
+        "002-establish-django-and-data-layer"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-migrate-news-schemes-and-ai",
+      "description": "Migrate news, government information, and AI-assisted features",
+      "reason": "AgriIntel and advisory behavior depend on RSS synchronization, stored content, caching, and Gemini-backed explanations.",
+      "requirements": "Migrate live/trending/location-based news, article saving/listing, news summaries, government schemes and state filters, scheme explanations, and government alerts. Preserve the observed RSS sources/refresh behavior, cache semantics, persistence, API contract, and Gemini request/result/error behavior. Read credentials only from runtime configuration during eventual execution; never place secrets in source, tests, logs, or plan output. Provide mockable service boundaries and tests for success, timeout/failure, empty-feed, and unavailable-key behavior.",
+      "dependencies": [
+        "002-establish-django-and-data-layer"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "005-migrate-community-and-coexplore",
+      "description": "Migrate community, social, chat, and co-explore REST behavior",
+      "reason": "These authenticated workflows combine relational records with a separately hosted real-time socket service.",
+      "requirements": "Migrate community listing/creation/membership, posts, comments, likes, community chat history and writes, invite send/respond, notifications, session end, and all related persistence/authorization rules. Preserve request/response behavior and ownership boundaries. Do not replace or alter socket-server; preserve its independent port, protocol, and event names and ensure Django-backed REST records remain compatible with the existing Next.js Socket.IO client.",
+      "dependencies": [
+        "002-establish-django-and-data-layer"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "006-migrate-marketplace",
+      "description": "Migrate shops, product, cart, recommendation, and payment API behavior",
+      "reason": "Marketplace routes and persisted carts/orders are part of the existing user-facing application.",
+      "requirements": "Migrate shop and product reads, cart read/add/remove, market recommendations, payment order creation and verification, and their models/relations. Preserve API contracts, validation, user scoping, pricing/order behavior, and failure responses observed in the source. Keep external payment/AI dependencies configurable and testable without secrets; do not invent new payment-provider behavior.",
+      "dependencies": [
+        "002-establish-django-and-data-layer"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "007-preserve-client-and-update-run-guides",
+      "description": "Keep the Next.js experience and update only necessary API wiring, documentation, and launch instructions",
+      "reason": "Users should retain the existing UI and have accurate Python/Django startup guidance after backend replacement.",
+      "requirements": "Keep Next.js pages/components and UX unchanged except for API integration changes proven necessary by compatibility tests. Preserve the existing configurable API base URL and /api path convention where possible. Leave socket-server source/configuration intact. Update root, backend, and frontend documentation and launch scripts/configuration to install Python dependencies, configure runtime settings safely, run Django migrations, and start the Django API. Do not read or overwrite backend/.env; provide clearly named examples without secrets.",
+      "dependencies": [
+        "003-migrate-auth-and-core-agriculture-api",
+        "004-migrate-news-schemes-and-ai",
+        "005-migrate-community-and-coexplore",
+        "006-migrate-marketplace"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "008-verify-parity-and-data-safety",
+      "description": "Verify Django API parity, data migration safety, and frontend compatibility before retiring Laravel",
+      "reason": "The old backend must remain available until replacement behavior and data preservation are demonstrated.",
+      "requirements": "Run the Django test suite and focused endpoint contract checks for all route groups, auth/CORS, data relationships, and external-service fallbacks. Run available frontend lint/build and targeted UI/API checks. Verify the approved database copy through schema, count, and referential-integrity comparisons without outputting records; confirm the original database remains unchanged. Confirm Socket.IO health and critical event compatibility without modifying its implementation. Stop on any unexplained contract/data mismatch.",
+      "dependencies": [
+        "007-preserve-client-and-update-run-guides"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "009-retire-laravel-runtime",
+      "description": "Retire Laravel application/runtime artifacts after parity and data-safety gates pass",
+      "reason": "The requested end state is a Django backend rather than a Laravel/PHP backend.",
+      "requirements": "Only after task 008 passes and the user approves any needed protected-file disposition, remove Laravel/PHP source, framework-specific migrations/configuration, Composer/Artisan runtime files, and obsolete Laravel launch guidance. Keep the Django project, Python dependency files, migrated tests, and updated docs. Do not delete, overwrite, move, or expose backend/.env, SQLite/database files, or other user-data/secret files without explicit user confirmation. If the protected .env must remain in backend/, report that the Laravel runtime is retired but protected user data remains rather than claiming the directory is fully clean.",
+      "dependencies": [
+        "008-verify-parity-and-data-safety"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "security",
+      "id": "010-final-security-and-dependency-check",
+      "description": "Review Django authentication, secret handling, and Python dependency security",
+      "reason": "Replacing Sanctum and changing runtime configuration can affect token security, cross-origin access, and credential handling.",
+      "requirements": "Review the migrated bearer-token lifecycle, protected-route authorization, CORS policy, upload validation, secret loading/logging, and third-party Python dependency advisories. Preserve observed behavior unless a security issue requires a documented change; do not expose credentials or alter protected user files. Remediate migration-introduced security/dependency issues and rerun affected tests.",
+      "dependencies": [
+        "009-retire-laravel-runtime"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "true",
+        "passUnitTests": "true"
+      }
+    }
+  ],
+  "metadata": {
+    "planName": "backend-django-replacement",
+    "projectName": "AgroInsight",
+    "language": "python",
+    "createdAt": "2026-11-24T11:10:00+05:30",
+    "version": "1.0"
+  }
+}

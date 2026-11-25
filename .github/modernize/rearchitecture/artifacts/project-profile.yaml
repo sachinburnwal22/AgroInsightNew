@@ -1,0 +1,43 @@
+﻿project:
+  scope_path: "D:\\PROJECTS@\\AgroInsight"
+  loc: 28042
+  languages: [JavaScript, PHP]
+  git: false
+  structure:
+    backend: "Existing Laravel/PHP API and SQLite-backed application data"
+    frontend: "Next.js/React/TypeScript web client"
+    socket-server: "Independent Node.js/Express/Socket.IO realtime service"
+  notes: "Cross-stack Laravel/PHP backend rewrite to Django/Python; preserve frontend and socket service."
+
+assessment:
+  change_type: rewrite
+  rationale: |
+    The existing backend is Laravel/PHP and the approved target replaces it with Django/Python.
+    Recon found 28,042 LOC across PHP and JavaScript/TypeScript, with three top-level modules.
+  transformations:
+    - fromStack: "Laravel/PHP"
+      fromStackVersion: "Laravel 12 (PHP 8.2+)"
+      toStack: "Django"
+      toStackVersion: "Django 5 / Python 3.12"
+  grouping_needed: false
+  deep_planning: true
+
+progress_sync:
+  run_id: dbe156af-8b4c-4c4b-8522-b66041dc045b
+  grouping_mode: none
+  execution_mode: saved
+  plan_start_time: "2026-11-24T11:19:46+05:30"
+  plan_completed_time: ""
+  execution_start_time: ""
+  execution_completed_time: ""
+  validation_start_time: ""
+  validation_completed_time: ""
+  total_phases: 5
+  completed_phases: 0
+  total_modules: 3
+  completed_modules: 0
+  total_tasks: 8
+  completed_tasks: 0
+  total_commits: 0
+  build_verified: false
+  test_verified: false
